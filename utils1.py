@@ -2,15 +2,11 @@ import torch
 import torch.fft
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
-
-
 import random
 
 
 class SeismicData(Dataset):
-    def __init__(self,
-                 data_dir,
-                 mask_dir):
+    def __init__(self, data_dir, mask_dir):
         self.data = np.load(data_dir)
         self.mask = np.load(mask_dir)
 
@@ -23,8 +19,6 @@ class SeismicData(Dataset):
         c = self.data[index]
         m = self.mask[index]
         c = self.log_preprocessing(c)
-        # m1 = self.mask1[index]
-
         return c.dot(m), m, c
 
     def log_preprocessing(self, x, s=1):
@@ -36,7 +30,6 @@ def return_data(args):
     data_dir = args.data_dir
     batch_size = args.batch_size
     mask_dir = args.mask_dir
-
 
     dset = SeismicData(data_dir, mask_dir)
     data_loader = DataLoader(dset,
@@ -56,14 +49,11 @@ def mask_sampling(m, rato=0.05, missing_type='1'):
         for i in range(1):
             index, _ = np.where((e - m[i].detach().cpu().numpy()) == 0)
 
-
             samples = random.sample(range(0, len(index)), n)
             indexR = index[samples]
             M[i, indexR, indexR] = 1
 
         return torch.tensor(M, dtype=torch.float, requires_grad=False)
-
-        # return M
     elif missing_type == '0':
         for i in range(len(m)):
             e = np.ones(n_trace)
@@ -100,13 +90,11 @@ def mask_sampling1(m, rato=0.05, missing_type='1'):
         return torch.tensor(M, dtype=torch.float, requires_grad=False)
     elif missing_type == '0':
         for i in range(len(m)):
-
             samples = random.sample(range(0, n_trace), n)
             M[i, samples, samples] = 1
         return torch.tensor(M, dtype=torch.float, requires_grad=False)
     else:
         for i in range(len(m)):
-
             d = int(n / 2)  # 缺失半径
             c = random.randint(d,n_trace-1-d)  # 缺失迹线中点
             index = list(set(range(0, n_trace)) - set(range(c - d, c + d)))
