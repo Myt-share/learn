@@ -55,7 +55,7 @@ class Solver(object):
                 x = x.unsqueeze(1).float().to(self.device)
                 m1 = m.unsqueeze(1).float().to(self.device)
                 e = torch.eye(x.size(-1)).expand((x.size(0), 1, x.size(-1), x.size(-1))).to(self.device)
-                for j in range(5):
+                for j in range(1):
                     M = mask_sampling(m, 0.2, '1').unsqueeze(1).float().to(self.device)
                     x1 = x.matmul(M)
 
